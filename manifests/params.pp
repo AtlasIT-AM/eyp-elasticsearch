@@ -1,17 +1,37 @@
 class elasticsearch::params {
 
+  $package_name='elasticsearch'
+  $service_name='elasticsearch'
+
   case $::osfamily
   {
-    'redhat' :
+    'redhat':
     {
       case $::operatingsystemrelease
       {
-        /^[67].*$/:
+        /^7.*$/:
         {
+          $package_url='https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.1.rpm'
+          $package_provider = 'rpm'
         }
-        default: { fail('Unsupported RHEL/CentOS version!')  }
+        default: { fail("Unsupported RHEL/CentOS version! - ${::operatingsystemrelease}")  }
       }
     }
-    default  : { fail('Unsupported OS!') }
+    'Debian':
+    {
+      case $::operatingsystem
+      {
+        'Ubuntu':
+        {
+          case $::operatingsystemrelease
+          {
+            default: { fail("Unsupported Ubuntu version! - ${::operatingsystemrelease}")  }
+          }
+        }
+        'Debian': { fail('Unsupported')  }
+        default: { fail('Unsupported Debian flavour!')  }
+      }
+    }
+    default: { fail('Unsupported OS!')  }
   }
 }
